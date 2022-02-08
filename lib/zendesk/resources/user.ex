@@ -7,29 +7,81 @@ defmodule ZendeskAPI.User do
 
   alias ZendeskAPI.HTTPClient
 
+  @derive Jason.Encoder
+  @enforce_keys [:name, :email]
+  defstruct [
+    :user_fields,
+    :id,
+    :ticket_restriction,
+    :report_csv,
+    :moderator,
+    :role_type,
+    :url,
+    :last_login_at,
+    :signature,
+    :updated_at,
+    :created_at,
+    :alias,
+    :shared_phone_number,
+    :default_group_id,
+    :restricted_agent,
+    :time_zone,
+    :shared_agent,
+    :shared,
+    :tags,
+    :verified,
+    :phone,
+    :details,
+    :locale_id,
+    :suspended,
+    :two_factor_auth_enabled,
+    :only_private_comments,
+    :iana_time_zone,
+    :notes,
+    :locale,
+    :custom_role_id,
+    :email,
+    :active,
+    :role,
+    :organization_id,
+    :name,
+    :external_id,
+    :photo
+  ]
+
+  @on_load :load_atoms
+
+  @list_keys [
+    :count,
+    :next_page,
+    :previous_page,
+    :users
+  ]
+
   @doc """
   List users.
   ## Examples
       iex> ZendeskAPI.User.list()
       {:ok,
       %{
-        "count" => 4,
-        "next_page" => nil,
-        "previous_page" => nil,
-        "users" => [...]
+        count: 4,
+        next_page: 2,
+        previous_page: nil,
+        users: [%ZendeskAPI.User{}, ...]
       }}
 
-      iex> ZendeskAPI.User.list(page: 5)
+      iex> ZendeskAPI.User.list(page: 2)
       {:ok,
       %{
-        "count" => 4,
-        "next_page" => nil,
-        "previous_page" => nil,
-        "users" => [...]
+        count: 4,
+        next_page: nil,
+        previous_page: 1,
+        users: [%ZendeskAPI.User{}, ...]
       }}
   """
   @spec list :: [] | {:error, String.t()}
   def list(opts \\ []) when is_list(opts) do
+
     url =
       "https://#{get_env!(:subdomain)}.zendesk.com/api/v2/users.json?#{URI.encode_query(opts)}"
 
@@ -52,9 +104,7 @@ defmodule ZendeskAPI.User do
 
   ## Examples
       iex> ZendeskAPI.User.show(1)
-      {:ok,
-      %{
-        "user" => %{
+      {:ok, %ZendeskAPI.User{
           "user_fields" => %{},
           "id" => 1,
           "ticket_restriction" => "requested",
@@ -117,9 +167,7 @@ defmodule ZendeskAPI.User do
   Create user.
   ## Examples
       iex> ZendeskAPI.User.create(%{name: "xxx", email: "xxx@xxx"})
-       {:ok,
-     %{
-       "user" => %{
+       {:ok, %ZendeskAPI.User{
          "user_fields" => %{},
          "id" => 1_903_008_556_644,
          "ticket_restriction" => "requested",
@@ -201,8 +249,8 @@ defmodule ZendeskAPI.User do
   end
 
   defp handle_response({:ok, %{status: status, body: body}}) when status in [200, 201] do
-    case Jason.decode(body) do
-      {:ok, attrs} -> {:ok, attrs}
+    case Jason.decode(body, keys: :atoms!) do
+      {:ok, attrs} -> {:ok, build_struct!(attrs)}
       {:error, reason} -> {:error, reason}
     end
   end
@@ -213,5 +261,22 @@ defmodule ZendeskAPI.User do
 
   defp handle_response({:error, exception}) do
     {:error, exception}
+  end
+
+  # Buils user struct
+  @spec build_struct!(map()) :: User.t()
+  defp build_struct!(%{user: user_map}) when is_map(user_map) do
+    struct!(__MODULE__, user_map)
+  end
+
+  defp build_struct!(%{users: user_list} = response) when is_list(user_list) do
+    user_structs = Enum.map(user_list, &struct!(__MODULE__, &1))
+
+    Map.put(response, :users, user_structs)
+  end
+
+  def load_atoms() do
+    Enum.each(@list_keys, &Code.ensure_loaded?/1)
+    :ok
   end
 end
