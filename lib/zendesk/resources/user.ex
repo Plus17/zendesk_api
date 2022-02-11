@@ -166,7 +166,7 @@ defmodule ZendeskAPI.User do
   @doc """
   Create user.
   ## Examples
-      iex> ZendeskAPI.User.create(%{name: "xxx", email: "xxx@xxx"})
+      iex> ZendeskAPI.User.create(%ZendeskAPI.User{name: "xxx", email: "xxx@xxx"})
        {:ok, %ZendeskAPI.User{
          "user_fields" => %{},
          "id" => 1_903_008_556_644,
@@ -208,8 +208,8 @@ defmodule ZendeskAPI.User do
        }
      }}
   """
-  @spec create(map()) :: User.t() | {:error, String.t()} | nil
-  def create(attrs) when is_map(attrs) do
+  @spec create(User.t()) :: User.t() | {:error, String.t()} | nil
+  def create(%__MODULE__{} = attrs) do
     url = "https://#{get_env!(:subdomain)}.zendesk.com/api/v2/users.json"
 
     headers = build_headers()

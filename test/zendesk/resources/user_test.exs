@@ -6,18 +6,18 @@ defmodule ZendeskAPI.UserTest do
   # Make sure mocks are verified when the test exits
   setup :verify_on_exit!
 
-  @valid_params %{
-    "name" => "Zendesk user",
-    "email" => "test@test.com"
+  @valid_params %ZendeskAPI.User{
+    name: "Zendesk user",
+    email: "test@test.com"
   }
 
-  @invalid_params %{name: "xxx", email: "xxx@xxx"}
+  @invalid_params %ZendeskAPI.User{name: "xxx", email: "xxx@xxx"}
 
   describe "create/1" do
     test "when data is valid" do
       ZendeskAPI.HTTPClient.Mock
       |> expect(:request, fn :post, _url, _headers, body, _opts ->
-        assert body == ~s|{"user":{"email":"test@test.com","name":"Zendesk user"}}|
+        assert body == ~s|{"user":{"user_fields":null,"shared_phone_number":null,"created_at":null,"only_private_comments":null,"external_id":null,"notes":null,"restricted_agent":null,"id":null,"shared_agent":null,"phone":null,"shared":null,"alias":null,"two_factor_auth_enabled":null,"role":null,"name":"Zendesk user","signature":null,"role_type":null,"verified":null,"locale_id":null,"details":null,"report_csv":null,"iana_time_zone":null,"organization_id":null,"tags":null,"last_login_at":null,"ticket_restriction":null,"suspended":null,"url":null,"active":null,"email":"test@test.com","updated_at":null,"locale":null,"default_group_id":null,"custom_role_id":null,"moderator":null,"time_zone":null,"photo":null}}|
 
         {:ok,
          %{
@@ -74,7 +74,7 @@ defmodule ZendeskAPI.UserTest do
       ZendeskAPI.HTTPClient.Mock
       |> expect(:request, fn :post, url, _headers, body, _opts ->
         assert url == "https://subdomain.zendesk.com/api/v2/users.json"
-        assert body == ~s|{"user":{"email":"test@test.com","name":"Zendesk user"}}|
+        assert body == ~s|{"user":{"user_fields":null,"shared_phone_number":null,"created_at":null,"only_private_comments":null,"external_id":null,"notes":null,"restricted_agent":null,"id":null,"shared_agent":null,"phone":null,"shared":null,"alias":null,"two_factor_auth_enabled":null,"role":null,"name":"Zendesk user","signature":null,"role_type":null,"verified":null,"locale_id":null,"details":null,"report_csv":null,"iana_time_zone":null,"organization_id":null,"tags":null,"last_login_at":null,"ticket_restriction":null,"suspended":null,"url":null,"active":null,"email":"test@test.com","updated_at":null,"locale":null,"default_group_id":null,"custom_role_id":null,"moderator":null,"time_zone":null,"photo":null}}|
 
         {:ok,
          %{
@@ -105,7 +105,7 @@ defmodule ZendeskAPI.UserTest do
       ZendeskAPI.HTTPClient.Mock
       |> expect(:request, fn :post, url, _headers, body, _opts ->
         assert url == "https://subdomain.zendesk.com/api/v2/users.json"
-        assert body == ~s|{"user":{"email":"xxx@xxx","name":"xxx"}}|
+        assert body == ~s|{"user":{"user_fields":null,"shared_phone_number":null,"created_at":null,"only_private_comments":null,"external_id":null,"notes":null,"restricted_agent":null,"id":null,"shared_agent":null,"phone":null,"shared":null,"alias":null,"two_factor_auth_enabled":null,"role":null,"name":"xxx","signature":null,"role_type":null,"verified":null,"locale_id":null,"details":null,"report_csv":null,"iana_time_zone":null,"organization_id":null,"tags":null,"last_login_at":null,"ticket_restriction":null,"suspended":null,"url":null,"active":null,"email":"xxx@xxx","updated_at":null,"locale":null,"default_group_id":null,"custom_role_id":null,"moderator":null,"time_zone":null,"photo":null}}|
 
         {:ok,
          %{
@@ -136,7 +136,7 @@ defmodule ZendeskAPI.UserTest do
     test "when exists users" do
       ZendeskAPI.HTTPClient.Mock
       |> expect(:request, fn :get, url, _headers, _body, _opts ->
-        assert url =~ "https://subdomain.zendesk.com/api/v2/users.json"
+        assert url == "https://subdomain.zendesk.com/api/v2/users.json?"
 
         {:ok,
          %{
