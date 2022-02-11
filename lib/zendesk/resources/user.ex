@@ -81,7 +81,6 @@ defmodule ZendeskAPI.User do
   """
   @spec list :: [] | {:error, String.t()}
   def list(opts \\ []) when is_list(opts) do
-
     url =
       "https://#{get_env!(:subdomain)}.zendesk.com/api/v2/users.json?#{URI.encode_query(opts)}"
 
