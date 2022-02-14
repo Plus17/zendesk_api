@@ -100,6 +100,7 @@ defmodule ZendeskAPI.User do
       {:ok, location} ->
         Telemetry.stop(:user, start, %{action: :list})
         {:ok, location}
+
       {:error, error} ->
         Telemetry.stop(:user, start, %{action: :list, error: error})
         {:error, error}
@@ -166,14 +167,15 @@ defmodule ZendeskAPI.User do
       |> HTTPClient.request(:get, url, headers, "", [])
       |> handle_response()
 
-      case result do
-        {:ok, location} ->
-          Telemetry.stop(:user, start, %{action: :show})
-          {:ok, location}
-        {:error, error} ->
-          Telemetry.stop(:user, start, %{action: :show, error: error})
-          {:error, error}
-      end
+    case result do
+      {:ok, location} ->
+        Telemetry.stop(:user, start, %{action: :show})
+        {:ok, location}
+
+      {:error, error} ->
+        Telemetry.stop(:user, start, %{action: :show, error: error})
+        {:error, error}
+    end
   end
 
   @doc """
@@ -237,14 +239,15 @@ defmodule ZendeskAPI.User do
       |> HTTPClient.request(:post, url, headers, body, [])
       |> handle_response()
 
-      case result do
-        {:ok, location} ->
-          Telemetry.stop(:user, start, %{action: :create})
-          {:ok, location}
-        {:error, error} ->
-          Telemetry.stop(:user, start, %{action: :create, error: error})
-          {:error, error}
-      end
+    case result do
+      {:ok, location} ->
+        Telemetry.stop(:user, start, %{action: :create})
+        {:ok, location}
+
+      {:error, error} ->
+        Telemetry.stop(:user, start, %{action: :create, error: error})
+        {:error, error}
+    end
   end
 
   # Gets an env variable

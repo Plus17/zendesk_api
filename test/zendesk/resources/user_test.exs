@@ -77,6 +77,7 @@ defmodule ZendeskAPI.UserTest do
         assert url == "https://subdomain.zendesk.com/api/v2/users.json"
         assert body =~ ~s|"name":"Zendesk user"|
         assert body =~ ~s|"email":"test@test.com"|
+
         {:ok,
          %{
            status: 422,
@@ -108,6 +109,7 @@ defmodule ZendeskAPI.UserTest do
         assert url == "https://subdomain.zendesk.com/api/v2/users.json"
         assert body =~ ~s|"name":"xxx"|
         assert body =~ ~s|"email":"xxx@xxx"|
+
         {:ok,
          %{
            status: 422,
