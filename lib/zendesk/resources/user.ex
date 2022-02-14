@@ -7,6 +7,8 @@ defmodule ZendeskAPI.User do
 
   alias ZendeskAPI.HTTPClient
 
+  alias ZendeskAPI.Telemetry
+
   @derive Jason.Encoder
   @enforce_keys [:name, :email]
   defstruct [
@@ -81,6 +83,8 @@ defmodule ZendeskAPI.User do
   """
   @spec list :: [] | {:error, String.t()}
   def list(opts \\ []) when is_list(opts) do
+    start = Telemetry.start(:user, %{action: :list})
+
     url =
       "https://#{get_env!(:subdomain)}.zendesk.com/api/v2/users.json?#{URI.encode_query(opts)}"
 
@@ -93,8 +97,12 @@ defmodule ZendeskAPI.User do
       |> handle_response()
 
     case result do
-      {:ok, location} -> {:ok, location}
-      {:error, error} -> {:error, error}
+      {:ok, location} ->
+        Telemetry.stop(:user, start, %{action: :list})
+        {:ok, location}
+      {:error, error} ->
+        Telemetry.stop(:user, start, %{action: :list, error: error})
+        {:error, error}
     end
   end
 
@@ -146,6 +154,8 @@ defmodule ZendeskAPI.User do
   """
   @spec show(integer) :: User.t() | {:error, String.t()}
   def show(id) when is_integer(id) do
+    start = Telemetry.start(:user, %{action: :show})
+
     url = "https://#{get_env!(:subdomain)}.zendesk.com/api/v2/users/#{id}.json"
 
     headers = build_headers()
@@ -156,10 +166,14 @@ defmodule ZendeskAPI.User do
       |> HTTPClient.request(:get, url, headers, "", [])
       |> handle_response()
 
-    case result do
-      {:ok, location} -> {:ok, location}
-      {:error, error} -> {:error, error}
-    end
+      case result do
+        {:ok, location} ->
+          Telemetry.stop(:user, start, %{action: :show})
+          {:ok, location}
+        {:error, error} ->
+          Telemetry.stop(:user, start, %{action: :show, error: error})
+          {:error, error}
+      end
   end
 
   @doc """
@@ -209,6 +223,8 @@ defmodule ZendeskAPI.User do
   """
   @spec create(User.t()) :: User.t() | {:error, String.t()} | nil
   def create(%__MODULE__{} = attrs) do
+    start = Telemetry.start(:user, %{action: :create})
+
     url = "https://#{get_env!(:subdomain)}.zendesk.com/api/v2/users.json"
 
     headers = build_headers()
@@ -221,10 +237,14 @@ defmodule ZendeskAPI.User do
       |> HTTPClient.request(:post, url, headers, body, [])
       |> handle_response()
 
-    case result do
-      {:ok, location} -> {:ok, location}
-      {:error, error} -> {:error, error}
-    end
+      case result do
+        {:ok, location} ->
+          Telemetry.stop(:user, start, %{action: :create})
+          {:ok, location}
+        {:error, error} ->
+          Telemetry.stop(:user, start, %{action: :create, error: error})
+          {:error, error}
+      end
   end
 
   # Gets an env variable
