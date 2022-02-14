@@ -1,4 +1,4 @@
-# ZendeskApi
+# ZendeskAPI
 
 Elixir client to communicate with the Zendesk API
 

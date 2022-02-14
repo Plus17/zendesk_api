@@ -1,3 +1,3 @@
-defmodule ZendeskApiTest do
+defmodule ZendeskAPITest do
   use ExUnit.Case
 end
