@@ -16,31 +16,25 @@ defmodule ZendeskAPI.Telemetry do
   @typep monotonic_time :: integer
 
   @doc false
-  @spec start(atom, map) :: monotonic_time
-  def start(name, meta \\ %{}) do
+  @spec start(atom(), map(), map()) :: monotonic_time
+  def start(name, meta, measurements \\ %{}) do
     start_time = System.monotonic_time()
 
-    :telemetry.execute(
-      [:zendesk_api, name, :start],
-      %{system_time: System.system_time()},
-      meta
-    )
+    measures = Map.put(measurements, :system_time, start_time)
+
+    :telemetry.execute([:zendesk_api, name, :start], measures, meta)
 
     start_time
   end
 
   @doc false
-  @spec stop(atom, monotonic_time, map) :: monotonic_time
-  def stop(name, start_time, meta \\ %{}) do
-    stop_time = System.monotonic_time()
-    duration = stop_time - start_time
+  @spec stop(atom(), monotonic_time, map(), map()) :: monotonic_time
+  def stop(name, start_time, meta, measurements \\ %{}) do
+    end_time = System.monotonic_time()
+    measures = Map.merge(measurements, %{duration: end_time - start_time})
 
-    :telemetry.execute(
-      [:zendesk_api, name, :stop],
-      %{system_time: System.system_time(), duration: duration},
-      meta
-    )
+    :telemetry.execute([:zendesk_api, name, :stop], measures, meta)
 
-    stop_time
+    end_time
   end
 end
