@@ -1,4 +1,4 @@
-defmodule ZendeskApi.MixProject do
+defmodule ZendeskAPI.MixProject do
   use Mix.Project
 
   def project do
@@ -25,6 +25,7 @@ defmodule ZendeskApi.MixProject do
       {:hackney, "~> 1.17"},
       {:jason, ">= 1.0.0"},
       {:mox, "~> 1.0", only: :test},
+      {:telemetry, "~> 1.0"},
       {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
       {:excoveralls, "~> 0.10", only: :test}
     ]
