@@ -1,7 +1,7 @@
 defmodule ZendeskAPI.Telemetry do
   @moduledoc """
   ZendeskAPI [Telemetry](https://github.com/beam-telemetry/telemetry) integration.
-  All time measurements are emitted in `:millisecond` units by
+  All time measurements are emitted in `:native` units by
   default.
 
   ZendeskAPI emits the following Telemetry events:
@@ -15,22 +15,14 @@ defmodule ZendeskAPI.Telemetry do
 
   @typep monotonic_time :: integer
 
-  defp monotonic_time do
-    :erlang.monotonic_time(:millisecond)
-  end
-
-  defp system_time do
-    :erlang.system_time(:millisecond)
-  end
-
   @doc false
   @spec start(atom, map) :: monotonic_time
   def start(name, meta \\ %{}) do
-    start_time = monotonic_time()
+    start_time = System.monotonic_time()
 
     :telemetry.execute(
       [:zendesk_api, name, :start],
-      %{system_time: system_time()},
+      %{system_time: System.system_time()},
       meta
     )
 
@@ -40,12 +32,12 @@ defmodule ZendeskAPI.Telemetry do
   @doc false
   @spec stop(atom, monotonic_time, map) :: monotonic_time
   def stop(name, start_time, meta \\ %{}) do
-    stop_time = monotonic_time()
+    stop_time = System.monotonic_time()
     duration = stop_time - start_time
 
     :telemetry.execute(
       [:zendesk_api, name, :stop],
-      %{system_time: system_time(), duration: duration},
+      %{system_time: System.system_time(), duration: duration},
       meta
     )
 
