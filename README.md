@@ -35,7 +35,7 @@ end
 ```elixir
 
   # Get an admin access token
-  iex> iex> ZendeskAPI.User.create(%{name: "User Name", email: "user_email@email.com"})
+  iex> iex> ZendeskAPI.User.create(%ZendeskAPI.User{name: "User Name", email: "user_email@email.com"})
        {:ok,
      %{
        "user" => %{
